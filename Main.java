@@ -123,31 +123,35 @@ scans through the grid, rows first, then columns, then diagonals
   @return 2d string array, the updated grid
 */
   public static String[][] gridInput(int slot, String[][] grid, String character) {
-      Scanner sc = new Scanner(System.in);
-      if (slot >= 1 && slot <= 9) {
-          int row = (slot - 1) / 3;
-          int col = (slot - 1) % 3;
+          Scanner sc = new Scanner(System.in);
 
-          if (grid[row][col].equals("X") || grid[row][col].equals("O")) {
-              System.out.println("Slot already taken. Please try again");
-              delay(2000);
-              slot = sc.nextInt();
-          } else {
-              grid[row][col] = character;
+          while (true) {
+              if (slot >= 1 && slot <= 9) {
+                  int row = (slot - 1) / 3;
+                  int col = (slot - 1) % 3;
+
+                  if (grid[row][col].equals("X") || grid[row][col].equals("O")) {
+                      System.out.println("Slot already taken. Please try again");
+                      delay(2000);
+                      slot = sc.nextInt();
+                  } else {
+                      grid[row][col] = character;
+                      break; // Break out of the loop if the input is valid
+                  }
+              } else {
+                  System.out.println("Invalid slot. Please try again");
+                  delay(2000);
+                  slot = sc.nextInt();
+              }
           }
-      } else {
-          System.out.println("Invalid slot. Please try again");
-          delay(2000);
-          slot = sc.nextInt();
-      }
-      
 
-      return grid;
+          return grid;
+      }
   }
   
   
  
-}
+
 class ChatGptInterface {
 
   /** 
