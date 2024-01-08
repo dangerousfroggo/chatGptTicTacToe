@@ -447,12 +447,13 @@ class Main {
 
               System.out.println("Would you like to play again? Type 'yes' or 'no'");
               String playAgain = sc.nextLine(); 
-              if (playAgain.equalsIgnoreCase("no")) {
+              if (playAgain.equals("no")) {
                   playHumanGame = false;
               } else {
                   playHumanGame = true;
                   // resets the grid
                   currentGrid = new String[][]{{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}};
+                  clearScreen();
               }
            }
         }
