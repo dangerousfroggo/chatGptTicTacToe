@@ -21,5 +21,5 @@ HOW TO RUN
 2) import into any coding IDE, or fork the repl and run it (much easier that way)
 3) choose IDE type (originally written for replit, some IDEs will have issues with the clearScreen method)
 4) insert your openai API key in the environment file (if using replit, use secrets feature. it does the same thing)
-5) run the program and follow instructions
+5) run the program and follow instructions. the api might take a few games to get fully trained, until then it may make silly goofy mistakes 
 
