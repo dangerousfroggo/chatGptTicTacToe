@@ -8,7 +8,7 @@ remember to set IDE type in Main class
 remember to add an API key as an environment variable
 */
 
-
+///glorious imports
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -21,12 +21,10 @@ import org.json.simple.parser.ParseException;
 
 class Game {
 
-/**
-void method that prints out the grid given a 2d array with containing current grid
-@param takes a 2d string array, corresponding to the current positions of X and O
-@return void
-
-*/
+  /** 
+  void method that adds delay
+  @param ms - time in milliseconds
+  */
   
   public static void delay(int ms) {
       try {
@@ -36,7 +34,13 @@ void method that prints out the grid given a 2d array with containing current gr
           e.printStackTrace();
       }
   }
+  
+  /**
+  void method that prints out the grid given a 2d array with containing current grid
+  @param takes a 2d string array, corresponding to the current positions of X and O
+  @return void
 
+  */
   public static void displayGrid(String[][] grid) {
       String spacing = "   "; /* spacing for grid */
       System.out.println("\n");
@@ -80,7 +84,7 @@ scans through the grid, rows first, then columns, then diagonals
     }
 
     int columnScanner;
-///scans collumns and returns winner based on column value
+///scans columns and returns winner based on column value
     for (columnScanner = 0; columnScanner < 3; columnScanner += 1) {
         if (grid[0][columnScanner].equals(grid[1][columnScanner]) && grid[1][columnScanner].equals(grid[2][columnScanner])) {
             if (grid[0][columnScanner].equals("X")) {
@@ -285,6 +289,10 @@ class Main {
     }
   }
 
+  /**
+    method that randomly decides players
+    @return string "player1" or "player2" corresponding to player
+  */
   public static String randomPlayerPicker(){
     double randomNum = Math.random();
     if (randomNum <= 0.5){
