@@ -448,6 +448,9 @@ class Main {
               System.out.println("Would you like to play again? Type 'yes' or 'no'");
               String playAgain = sc.nextLine(); 
               if (playAgain.equals("no")) {
+                  System.out.println("gotchu lil bro, exiting program...");
+                  
+                  System.exit(0);
                   playHumanGame = false;
               } else {
                   playHumanGame = true;
