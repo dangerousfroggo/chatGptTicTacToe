@@ -1,4 +1,4 @@
-/* _   _             _                    _                    __   ___  
+/*_   _             _                    _                    __   ___  
  | | (_)           | |                  | |                  /_ | / _ \ 
  | |_ _  ___ ______| |_ __ _  ___ ______| |_ ___   ___  __   _| || | | |
  | __| |/ __|______| __/ _` |/ __|______| __/ _ \ / _ \ \ \ / / || | | |
@@ -220,38 +220,35 @@ class ChatGptInterface {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("Authorization", "Bearer " + apiKey); ///environment variable, must remember to add to git
+            connection.setRequestProperty("Authorization", "Bearer " + apiKey); 
             connection.setDoOutput(true);
 
             try (OutputStream os = connection.getOutputStream()) {
                 byte[] input = requestBody.getBytes("utf-8");
                 os.write(input, 0, input.length);
             }
-            System.out.println("~api call successful~");
+            
 
             try (Scanner scanner = new Scanner(connection.getInputStream(), "utf-8")) {
                 StringBuilder response = new StringBuilder();
                 while (scanner.hasNextLine()) {
                     response.append(scanner.nextLine());
+                  
                 }
+                System.out.println("~api call successful~");
 
                 System.out.println(response);
                 String[][] generatedMove = parseApiResponse(grid,response.toString());
-                //System.out.println(Arrays.deepToString(generatedMove));
                 return generatedMove;
             }
       ///and ends here
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("~failed api call"); //test 
+            System.out.println("~failed api call~"); 
         }
-
         return grid; // if api call fails, returns current grid with no changes//
         
-    }
-
-
-
+  }
 }
 
 
@@ -449,12 +446,12 @@ class Main {
               }
 
               System.out.println("Would you like to play again? Type 'yes' or 'no'");
-              String playAgain = sc.next(); // Use next() to read the user's input
+              String playAgain = sc.nextLine(); 
               if (playAgain.equalsIgnoreCase("no")) {
                   playHumanGame = false;
               } else {
                   playHumanGame = true;
-                  // Reset the grid for a new game
+                  // resets the grid
                   currentGrid = new String[][]{{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}};
               }
            }
