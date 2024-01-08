@@ -3,14 +3,11 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
-
-
-
 import org.json.simple.JSONArray; 
 import org.json.simple.JSONObject;
-
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
 class Game {
 
 /**
@@ -21,21 +18,26 @@ void method that prints out the grid given a 2d array with containing current gr
 */
 
   public static void displayGrid(String[][] grid) {
-  
-    String spacing = "       "; /* spacing for grid */
-    System.out.println("\n");
-    System.out.println(spacing + " 1" + "      " + " 2" + "      " + " 3");
-    System.out.println("\n");
-    
-    System.out.println("1" + spacing + grid[0][0] + spacing + grid[0][1] + spacing + grid[0][2]);
-    System.out.println("\n");
-    
-    System.out.println("2" + spacing + grid[1][0] + spacing + grid[1][1] + spacing + grid[1][2]);
-    System.out.println("\n");
-  
-    System.out.println("3" + spacing + grid[2][0] + spacing + grid[2][1] + spacing + grid[2][2]);
-    
+      String spacing = "   "; /* spacing for grid */
+      System.out.println("\n");
+
+      int slot = 1;
+      for (int i = 0; i < 3; i++) {
+          for (int j = 0; j < 3; j++) {
+              System.out.print(spacing + grid[i][j] + spacing);
+              if (j < 2) {
+                  System.out.print("|");
+              }
+            
+              slot++;
+          }
+          System.out.println("\n");
+          if (i < 2) {
+              System.out.println(" --------------------- ");
+          }
+      }
   }
+
 
 /**
 method that calculates the winner of the game
@@ -43,39 +45,29 @@ scans through the grid, rows first, then columns, then diagonals
 @param takes a 2d string array, corresponding to the current positions of X and O
 @return a string tie, x, or o, corresponding to the winner of the game.
 */
-  public static String winCalculator(String[][] grid) {
-
-/**
- scans rows 1-3 and checks for equivalency
-*/
-    String win = "no winner determined yet";
+    public static String winCalculator(String[][] grid) {
+    String win = "noWinner";
     int rowScanner;
-    for(rowScanner = 0; rowScanner < 3; rowScanner+=1){
-      if(grid[rowScanner][0].equals(grid[rowScanner][1]) && grid[rowScanner]  [1].equals(grid[rowScanner][2])){
-        if(grid[rowScanner][0].equals("X")){
-          win = "X";
+    for (rowScanner = 0; rowScanner < 3; rowScanner += 1) {
+        if (grid[rowScanner][0].equals(grid[rowScanner][1]) && grid[rowScanner][1].equals(grid[rowScanner][2])) {
+            if (grid[rowScanner][0].equals("X")) {
+                win = "X";
+            } else if (grid[rowScanner][0].equals("O")) {
+                win = "O";
+            }
         }
-        else if(grid[rowScanner][0].equals("O")){
-          win = "O";
-        }
-      }
     }
-/**
-  scans colums 1-3 and checks for equivalency
-*/
+
     int columnScanner;
-    for(columnScanner = 0; columnScanner <3; columnScanner +=1){
-      if(grid[0][columnScanner].equals(grid[1][columnScanner]) && grid[1][columnScanner].equals(grid[2][columnScanner])){
-        if(grid[0][columnScanner].equals("X")){
-          win = "X";
+    for (columnScanner = 0; columnScanner < 3; columnScanner += 1) {
+        if (grid[0][columnScanner].equals(grid[1][columnScanner]) && grid[1][columnScanner].equals(grid[2][columnScanner])) {
+            if (grid[0][columnScanner].equals("X")) {
+                win = "X";
+            } else if (grid[0][columnScanner].equals("O")) {
+                win = "O";
+            }
         }
-        else if(grid[columnScanner][0].equals("O")){
-          win = "O";
-        } else {
-          win = "Tie";
-        }
-      }
-   }
+    }
 /** 
 scans diagonals and determines winner based on center of the grid's value
 */
@@ -98,10 +90,21 @@ scans diagonals and determines winner based on center of the grid's value
   desired input
   @return 2d string array, the updated grid
 */
-  public static String[][] gridInput(int xPos, int yPos, String[][] grid, String character){
-    grid[yPos][xPos] = character;
+  public static String[][] gridInput(int slot, String[][] grid, String character) {
+      if (slot >= 1 && slot <= 9) {
+          int row = (slot - 1) / 3;
+          int col = (slot - 1) % 3;
 
-    return grid;
+          if (grid[row][col].equals("X") || grid[row][col].equals("O")) {
+              System.out.println("Slot already taken. Please try again");
+          } else {
+              grid[row][col] = character;
+          }
+      } else {
+          System.out.println("Invalid slot. Please enter a number between 1 and 9.");
+      }
+
+      return grid;
   }
   
   
@@ -114,8 +117,8 @@ class ChatGptInterface {
   @param takes a string, the training text followed by the current grid as a coordinate system
   @returns a string, the prompt for the chat gpt api
   */
-  public static String createPromptForGpt(String[][] grid) {
-    String prompt = "you are a chat bot, and your job is to play a tic tac toe game against me. do not return any text, only the grid. you are O, and therefore can only make moves as O. you can only make one move per turn. if you make a move that puts you in a spot that is already taken, you will lose";
+  public static String createPromptForGpt(String[][] grid, String playerType) {
+    String prompt = "you are a chat bot, and your job is to play a tic tac toe game against me. do not return any text, only the grid. you are " + playerType +  " and therefore can only make moves as " + playerType + ". you can only make one move per turn. if you make a move that puts you in a spot that is already taken, you will lose. the current grid contains numbers 1-9 as fillers, so the user youre playing against can enter which slot they would like to place their character in. make sure the grid you return still contains these fillers in their original location, unless replaced by an X or an O. the grid is as follows: ";
     prompt += "here is the current grid: ";
     prompt += Arrays.deepToString(grid);
     return prompt;
@@ -140,10 +143,11 @@ class ChatGptInterface {
               // Extract the 2D array from the text
               String[] rows = text.split("\\], \\[");
               for (int i = 0; i < rows.length; i++) {
-                  rows[i] = rows[i].replaceAll("[\\[\\]]", "").replaceAll(",", "").trim();
-                  String[] cells = rows[i].split(" ");
-                  for (int j = 0; j < cells.length; j++) {
-                      grid[i][j] = cells[j];
+                  rows[i] = rows[i].replaceAll("[\\[\\]]", "").trim();
+                  String[] cells = rows[i].split(",\\s*");
+
+                  for (int j = 0; j < cells.length && j < grid[i].length; j++) {
+                      grid[i][j] = cells[j].trim();
                   }
               }
           }
@@ -163,8 +167,8 @@ class ChatGptInterface {
   */
 
   
-  public static String[][] generateAiMove(String[][] grid) { /*make private? */
-        String prompt = createPromptForGpt(grid);
+  public static String[][] generateAiMove(String[][] grid, String aiCharType) { 
+        String prompt = createPromptForGpt(grid, aiCharType);
         String requestBody = "{\"prompt\": \"" + prompt + "\", \"max_tokens\": 1000}";
         String openAiApiUrl = "https://api.openai.com/v1/engines/text-davinci-003/completions";
         String apiKey = System.getenv("apiKey");
@@ -191,7 +195,7 @@ class ChatGptInterface {
 
                 System.out.println(response);
                 String[][] generatedMove = parseApiResponse(grid,response.toString());
-                
+                //System.out.println(Arrays.deepToString(generatedMove));
                 return generatedMove;
             }
       /*and ends here*/
@@ -211,40 +215,103 @@ class Main {
   /**
   main method that runs the game
   */
+ 
+
+  /**
+    void method with no return type, clears the screen when called upon
+  */
+  public static void clearScreen() {  
+    System.out.print("\033[H\033[2J");  
+    System.out.flush();  
+   }
+  public static String randomPlayerTypePicker(){
+    double randomNum = Math.random();
+    if (randomNum <= 0.5){
+      return "X";
+    }
+    else{
+      return "O";
+    }
+    
+  }
+
+  public static void delay(int ms) {
+      try {
+          Thread.sleep(ms);
+      } catch (InterruptedException e) {
+          
+          e.printStackTrace();
+      }
+  }
+  
+  /*
+  main method for the game 
+  */
   public static void main(String[] args) {
-    boolean playingGame = true;
+    String humanPlayerType = randomPlayerTypePicker();
+    String aiPlayerType = "";
+    if (humanPlayerType.equals("X")){
+      aiPlayerType = "O";
+    } else {
+      aiPlayerType = "X";
+    }
+  
+    
+      
+    boolean playingGame = true; ///boolean to keep the game running
     while(playingGame){
     Scanner sc = new Scanner(System.in);
-    System.out.println("hello human do you wanna play against anothe human or be slayed by chadgpt?");
+    System.out.println("hello human. welcome to tic tac toe. would you like to play against chadgpt or another human player? type either 'chadgpt' or 'human'.");
     String opponent = sc.nextLine();
+    boolean isGptFirst;
+      
     if (opponent.equals("chadgpt")){
-    String[][] grid = {{" ", " ", " "}, {" ", " ", " "}, {" ", " ", " "}}; 
-    System.out.println("hello chat u are playing tictactoe against chad gpt");
+   
+      String[][] currentGrid = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}}; 
+      System.out.println("you are playing against chadgpt.");
+      System.out.println("you are " + humanPlayerType + ". ChadGPT is " + aiPlayerType);
+      delay(2000);
+      System.out.println("here is your grid");
     
-    Game.displayGrid(grid);
-    System.out.println("Enter your next move (y,x)");
     
-      while (true) {
-      grid = Game.gridInput(sc.nextInt()-1,sc.nextInt()-1,grid,"X"); ///takes user input and inputs into grid as x
-      if (Game.winCalculator(grid) == "X") {
-        Game.displayGrid(grid);
-        System.out.println("You won!");
-        break;
+      if(aiPlayerType.equals("X")){
+        isGptFirst = true;
+      } else {
+        isGptFirst = false;
       }
-      grid = ChatGptInterface.generateAiMove(grid);
+    
+      while(true){
+        clearScreen();
+        Game.displayGrid(currentGrid);
+        String winner;
+        if (isGptFirst){
+          System.out.println("chadgpt is making a move...");
+          currentGrid = ChatGptInterface.generateAiMove(currentGrid, aiPlayerType);
+        } else {
+            System.out.println("it is your turn. enter the slot you would like to place your character in.");
+            int slotx = sc.nextInt();
+            currentGrid = Game.gridInput(slotx, currentGrid, humanPlayerType);
+        }
+
+        winner = Game.winCalculator(currentGrid);
+        if(!winner.equals("noWinner")){
+          clearScreen();
+          Game.displayGrid(currentGrid);
+          System.out.println(winner + " has won the game!");
+          break;
+        } else if (winner.equals("Tie")){
+          clearScreen();
+          Game.displayGrid(currentGrid);
+          System.out.println("the game is a tie!");
+          break;
+  
         
-      if (Game.winCalculator(grid) == "O") {
-        Game.displayGrid(grid);
-        System.out.println("You lost!");
-        break;
+        
       }
-      Game.displayGrid(grid);
-      System.out.println("Enter your next move (y,x)");
-    }
-    } 
-
-
-    
+      
+      isGptFirst = !isGptFirst;
+    }   
+  }
     ///if opponent is human, prompts user for input. ///
     
     else if(opponent.equals("human")){
@@ -252,34 +319,35 @@ class Main {
       String[][] grid = {{" ", " ", " "}, {" ", " ", " "},{" ", " ", ""}};
       Game.displayGrid(grid);
       while (true){
-        System.out.println("player X, enter input as (x,y)");
-        grid = Game.gridInput(sc.nextInt()-1,sc.nextInt()-1,grid,"X");
+        System.out.println("Player X, enter the slot where you would like to place your X on a new line");
+        grid = Game.gridInput(sc.nextInt(),grid,"X");
         Game.displayGrid(grid);
 
         //checks for winner after X turn
         if(Game.winCalculator(grid) == "X"){
-        System.out.println("x won");
+        System.out.println("X won");
         break;
+
         } else if (Game.winCalculator(grid) == "O"){
-        System.out.println("o won");
+        System.out.println("O won");
         break;
         }
 
-        System.out.println("player O, enter input as (x,y)");
-        grid = Game.gridInput(sc.nextInt()-1,sc.nextInt()-1,grid,"O");
+        System.out.println("Player O, enter the slot where you would like to place your O on a new line");
+        grid = Game.gridInput(sc.nextInt(),grid,"O");
         Game.displayGrid(grid);
         ///checks for winner after O turn
         if(Game.winCalculator(grid) == "X"){
-        System.out.println("x won");
+        System.out.println("X won");
         break;
         } else if (Game.winCalculator(grid) == "O"){
-        System.out.println("o won");
+        System.out.println("O won");
         break;
         }
         System.out.println("tie");
         
       }
-      System.out.println("~game completed"); //tests for game end
+      System.out.println("~game completed"); 
       
       
       
@@ -289,4 +357,5 @@ class Main {
   }
     
   }
-}
+
+  }
