@@ -360,7 +360,7 @@ class Main {
       } else {
         isGptFirst = false;
       }
-    
+      ///turn loop
       while(true){
         clearScreen();
         Game.displayGrid(currentGrid);
