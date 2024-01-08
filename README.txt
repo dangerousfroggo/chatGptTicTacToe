@@ -1,8 +1,17 @@
-                                                                    overcomplicated tic-tac-toe game v1.0
+                                                    
+  _   _             _                    _                    __   ___  
+ | | (_)           | |                  | |                  /_ | / _ \ 
+ | |_ _  ___ ______| |_ __ _  ___ ______| |_ ___   ___  __   _| || | | |
+ | __| |/ __|______| __/ _` |/ __|______| __/ _ \ / _ \ \ \ / / || | | |
+ | |_| | (__       | || (_| | (__       | || (_) |  __/  \ V /| || |_| |
+  \__|_|\___|       \__\__,_|\___|       \__\___/ \___|   \_/ |_(_)___/ 
+                                                                        
+                                                                        
+
 
 
 DESCRIPTION
-this groundbreaking java program allows a user to engage in an exciting game of tic tac toe. users will be given the option to either play against the latest, state-of-the-art trained ai, or play against another human player on the same device.
+this groundbreaking java program allows a user to engage in an exciting game of tic tac toe. users will be given the option to either play against the latest, state-of-the-art trained ai, or play against another human player on the same device. Usign a simple text-based console interface, the user is required to type input into the console.
 
 TECHNOLOGIES USED
 this program makes use of the openai API, specifically the text davinci 3.0 model. While not the latest model, it is intelligent enough to play tic tac toe. The program can be easily update to a later model. To parse the response from the API, the JSON.simple library is used.
